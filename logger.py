@@ -206,3 +206,4 @@ def reset_logger():
     """Reset the global logger (useful for testing)."""
     global _global_logger
     _global_logger = None
+

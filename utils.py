@@ -79,3 +79,4 @@ def print_board(board):
         if i < 2:
             print("-" * 11)
     print("\n")
+

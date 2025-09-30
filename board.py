@@ -74,3 +74,4 @@ class Board:
     def reset(self):
         """Reset the board to empty state."""
         self.board = [[None, None, None] for _ in range(3)]
+

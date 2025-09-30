@@ -238,3 +238,4 @@ export const DEFAULT_PLAYER_CONFIG: PlayerConfig = {
 export const DEFAULT_GAME_CONFIG: GameConfig = {
   enable_logging: true,
 };
+

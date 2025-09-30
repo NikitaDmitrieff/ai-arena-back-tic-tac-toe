@@ -78,6 +78,9 @@ This implementation works with the existing backend API - no modifications neede
 - Compatible with all current player configurations
 - Works with both LLM and random players
 
+**For complete API documentation, see:**
+- **[API_INTEGRATION_GUIDE.md](API_INTEGRATION_GUIDE.md)** - Complete integration guide for building your own frontend
+
 ## Usage
 
 1. **Configure players** (LLM or random)
