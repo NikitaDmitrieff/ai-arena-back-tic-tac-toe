@@ -1,0 +1,22 @@
+{
+  "name": "tictactoe-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for LLM-powered tic-tac-toe game",
+  "scripts": {
+    "dev": "python -m http.server 3000",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "tictactoe",
+    "llm",
+    "fastapi",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT"
+}

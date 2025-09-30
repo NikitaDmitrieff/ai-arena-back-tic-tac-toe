@@ -181,14 +181,40 @@ curl http://localhost:8000/logs
 
 ## Frontend Interface
 
-The minimal frontend provides:
-- **New Game**: Create a new game session (random players by default)
-- **Make Random Move**: Let the current player make a move (random or LLM based on player type)
-- **Play Auto**: Play the entire game automatically
-- **Reset**: Reset the current game to start over
-- **Click on cells**: Make manual moves by clicking on board cells
+We provide two frontend options:
 
-**Note**: To use LLM players from the frontend, use the API directly or modify the frontend to send player configurations.
+### Enhanced UI (`index-enhanced.html`) - DEFAULT
+**Recommended for most users**
+
+Full-featured interface with:
+- **Player Configuration**: Choose LLM or random for each player
+- **Model Selection**: Pick from OpenAI (GPT-4o, GPT-4o-mini, etc.) or Mistral models
+- **Temperature Control**: Adjust creativity (0.0 = deterministic, 2.0 = very creative)
+- **Provider Selection**: Switch between OpenAI and Mistral
+- **Visual Game Board**: Click cells or let AI play
+- **Real-time Updates**: See game state and player info
+- **Beautiful UI**: Modern, gradient design with animations
+
+Access at: http://localhost:3000 or http://localhost:3000/index-enhanced.html
+
+### Simple UI (`index.html`)
+**For debugging and minimal interface needs**
+
+Basic features:
+- **New Game**: Create a new game session (random players only)
+- **Make Move**: Manual or automatic moves
+- **Play Auto**: Play the entire game automatically
+- **Reset**: Reset the current game
+
+Access at: http://localhost:3000/index.html
+
+### Type-Safe API Integration
+
+The frontend includes TypeScript types that match backend Pydantic schemas:
+- **`frontend/src/types/api.ts`**: All request/response types
+- **`frontend/src/services/api.ts`**: Type-safe API client
+
+See **`FRONTEND_BACKEND_INTEGRATION.md`** for the complete integration guide.
 
 ## Logging System
 
@@ -252,6 +278,16 @@ The user prompt provides:
 - Current player symbol
 - Strategic considerations
 
+## Documentation
+
+This project includes comprehensive documentation:
+
+1. **`README.md`** (this file) - Overview and getting started
+2. **`FRONTEND_BACKEND_INTEGRATION.md`** - Complete guide for connecting frontend and backend
+3. **`QUICK_REFERENCE.md`** - Quick commands and patterns
+4. **`IMPLEMENTATION.md`** - LLM integration implementation details
+5. **`QUICKSTART.md`** - 3-step quick start guide
+
 ## Troubleshooting
 
 **LLM players not working?**
@@ -267,6 +303,16 @@ The user prompt provides:
 - Check the `logs/` directory is created
 - Verify volume mounting in docker-compose.yml
 - Check file permissions
+
+**Frontend can't reach backend?**
+- Verify API URL in frontend (default: http://localhost:8000)
+- Check CORS settings in backend
+- Ensure backend is running: `docker ps`
+
+**Type mismatches between frontend/backend?**
+- See `FRONTEND_BACKEND_INTEGRATION.md` for synchronization strategies
+- Use OpenAPI schema: `http://localhost:8000/openapi.json`
+- Check TypeScript types: `frontend/src/types/api.ts`
 
 ## Future Enhancements
 

@@ -5,12 +5,7 @@ import json
 import time
 from typing import Optional, Tuple, Dict, Any
 
-try:
-    from nikitas_agents import BaseAgent
-    NIKITAS_AGENTS_AVAILABLE = True
-except ImportError:
-    NIKITAS_AGENTS_AVAILABLE = False
-    BaseAgent = None
+from nikitas_agents import BaseAgent
 
 from prompts import SYSTEM_PROMPT, get_move_prompt, ERROR_RECOVERY_PROMPT
 
@@ -48,7 +43,7 @@ class Player:
         self.temperature = temperature
         
         # Initialize agent if use_llm is True and no agent provided
-        if use_llm and agent is None and NIKITAS_AGENTS_AVAILABLE:
+        if use_llm and agent is None:
             try:
                 self.agent = BaseAgent(
                     name=f"TicTacToe_{symbol}",

@@ -19,7 +19,14 @@ from game import Game
 from player import Player
 
 
-app = FastAPI(title="Tic-Tac-Toe API")
+app = FastAPI(
+    title="Tic-Tac-Toe API",
+    description="API for LLM-powered tic-tac-toe games with comprehensive logging",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json"
+)
 
 # Configure CORS
 app.add_middleware(
@@ -236,6 +243,43 @@ async def get_logs():
         "moves_log": str(paths['moves']),
         "games_log": str(paths['games']),
         "note": "Log files are stored on the server filesystem"
+    }
+
+
+@app.get("/schema/typescript")
+async def get_typescript_schema():
+    """
+    Get TypeScript type definitions for the API.
+    This endpoint helps maintain type alignment between frontend and backend.
+    """
+    typescript_schema = """
+// Auto-generated TypeScript types from FastAPI backend
+// Last updated: {timestamp}
+
+export interface PlayerConfig {{
+  use_llm: boolean;
+  provider: 'openai' | 'mistral';
+  model: string;
+  temperature: number;
+}}
+
+export interface GameConfig {{
+  player_x?: PlayerConfig;
+  player_o?: PlayerConfig;
+  enable_logging: boolean;
+}}
+
+export interface MoveRequest {{
+  row?: number;
+  col?: number;
+}}
+
+// See /openapi.json for complete schema
+"""
+    from datetime import datetime
+    return {
+        "typescript": typescript_schema.format(timestamp=datetime.now().isoformat()),
+        "note": "For complete schema, use OpenAPI tools to generate from /openapi.json"
     }
 
 
