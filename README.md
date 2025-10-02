@@ -314,6 +314,30 @@ This project includes comprehensive documentation:
 - Use OpenAPI schema: `http://localhost:8000/openapi.json`
 - Check TypeScript types: `frontend/src/types/api.ts`
 
+## Deployment
+
+This project includes automated CI/CD deployment using GitHub Actions.
+
+### Automated Deployment
+
+The workflow automatically:
+- Builds and pushes Docker images to GitHub Container Registry
+- Deploys to your VM on push to `main` branch
+
+**Setup Guide**: See [`.github/DEPLOYMENT.md`](.github/DEPLOYMENT.md) for:
+- Required GitHub secrets configuration
+- VM prerequisites and setup
+- Monitoring and troubleshooting
+- Manual deployment instructions
+
+### Quick Setup
+
+1. Configure GitHub secrets (VM_HOST, VM_USER, VM_SSH_KEY)
+2. Optionally add API keys (OPENAI_API_KEY, MISTRAL_API_KEY)
+3. Push to `main` branch - automatic deployment!
+
+Access the deployed API at: `http://your-vm-host:8000`
+
 ## Future Enhancements
 
 - [ ] Add different AI strategies (minimax, etc.)

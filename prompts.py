@@ -21,12 +21,12 @@ Do not include any other text or explanation outside the JSON object."""
 def get_move_prompt(board_state, player_symbol, available_moves):
     """
     Generate the user prompt for move selection.
-    
+
     Args:
         board_state: 3x3 list representing the current board
         player_symbol: 'X' or 'O'
         available_moves: List of (row, col) tuples for available positions
-        
+
     Returns:
         Formatted prompt string
     """
@@ -35,7 +35,7 @@ def get_move_prompt(board_state, player_symbol, available_moves):
     board_lines.append("\nCurrent Board State:")
     board_lines.append("     0   1   2")
     board_lines.append("   +---+---+---+")
-    
+
     for row_idx, row in enumerate(board_state):
         row_display = f" {row_idx} |"
         for cell in row:
@@ -43,12 +43,12 @@ def get_move_prompt(board_state, player_symbol, available_moves):
             row_display += f" {symbol} |"
         board_lines.append(row_display)
         board_lines.append("   +---+---+---+")
-    
+
     board_str = "\n".join(board_lines)
-    
+
     # Format available moves
     moves_str = ", ".join([f"({r},{c})" for r, c in available_moves])
-    
+
     prompt = f"""{board_str}
 
 You are playing as: {player_symbol}
@@ -60,31 +60,31 @@ Analyze the board and choose your best move. Consider:
 3. Strategic positioning (center, corners, sides)
 
 Respond with JSON only: {{"row": <int>, "col": <int>, "reasoning": "<brief explanation>"}}"""
-    
+
     return prompt
 
 
 def get_game_analysis_prompt(board_state, winner, total_moves):
     """
     Generate prompt for post-game analysis.
-    
+
     Args:
         board_state: Final board state
         winner: 'X', 'O', or None (draw)
         total_moves: Number of moves made
-        
+
     Returns:
         Formatted prompt string
     """
     outcome = f"{winner} won" if winner else "Draw"
-    
+
     board_lines = []
     for row in board_state:
         row_display = " | ".join([cell if cell else " " for cell in row])
         board_lines.append(row_display)
-    
+
     board_str = "\n".join(board_lines)
-    
+
     prompt = f"""Analyze this completed tic-tac-toe game:
 
 Final Board:
@@ -94,7 +94,7 @@ Outcome: {outcome}
 Total Moves: {total_moves}
 
 Provide a brief analysis of the game strategy and key moments."""
-    
+
     return prompt
 
 
@@ -108,4 +108,3 @@ Remember:
 4. The position must be empty on the board
 
 Try again with a valid move."""
-
