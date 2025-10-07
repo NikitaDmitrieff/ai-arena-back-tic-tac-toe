@@ -78,6 +78,17 @@ async def root():
     }
 
 
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for monitoring and deployment verification."""
+    return {
+        "status": "healthy",
+        "service": "ai-arena-tictactoe",
+        "version": "1.0.0",
+        "active_games": len(games)
+    }
+
+
 @app.post("/games")
 async def create_game(config: Optional[GameConfig] = None):
     """

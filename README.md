@@ -1,143 +1,77 @@
-# Tic-Tac-Toe Game with LLM Players
+# Tic-Tac-Toe Backend
 
-A tic-tac-toe game implementation featuring LLM-powered players using the `nikitas-agents` package, with comprehensive CSV logging and a FastAPI backend.
-
-## Project Structure
-
-```
-tic-tac-toe/
-├── utils.py              # Utility functions (check winner, available moves, etc.)
-├── board.py              # Board class
-├── player.py             # Player class (supports both random and LLM players)
-├── game.py               # Game orchestration logic with logging
-├── prompts.py            # LLM prompts for game playing
-├── logger.py             # CSV logging system
-├── main.py               # FastAPI application
-├── requirements.txt      # Python dependencies
-├── Dockerfile            # Backend container configuration
-├── frontend/
-│   ├── index.html        # Minimal debug interface
-│   └── Dockerfile        # Frontend container configuration
-├── docker-compose.yml    # Container orchestration
-└── logs/                 # CSV log files (created at runtime)
-```
+FastAPI backend for Tic-Tac-Toe with LLM-powered players using OpenAI and Mistral models.
 
 ## Features
 
-- **LLM Players**: Battle two LLMs against each other using OpenAI or Mistral models
-- **Random Players**: Fallback to random move selection
-- **Comprehensive Logging**: CSV logs track every prompt, response, move, and game outcome
-- **FastAPI Backend**: RESTful API with endpoints for game management
-- **Minimal Frontend**: Simple HTML/JS interface for testing and debugging
-- **Dockerized**: Both backend and frontend run in separate containers
-- **Flexible Configuration**: Mix and match LLM and random players
+- 🤖 **LLM Players** - Battle AI models against each other
+- 🎲 **Random Players** - Fallback to random moves
+- 📊 **Comprehensive Logging** - CSV logs track every move
+- ⚡ **FastAPI Backend** - RESTful API
+- 🐳 **Dockerized** - Ready for deployment
+- 🏥 **Health Checks** - `/health` endpoint for monitoring
+
+## Tech Stack
+
+- **Framework:** FastAPI + Uvicorn
+- **Language:** Python 3.9+
+- **LLM Integration:** nikitas-agents package
+- **APIs:** OpenAI, Mistral
+
+## Quick Start
+
+### Local Development
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Create .env file (optional for LLM players)
+cat > .env << EOF
+OPENAI_API_KEY=sk-...
+MISTRAL_API_KEY=...
+EOF
+
+# Run server
+uvicorn main:app --reload --port 8000
+
+# Open http://localhost:8000/docs
+```
+
+### Docker
+
+```bash
+# Build image
+docker build -t tictactoe-backend .
+
+# Run container
+docker run -p 8000:8000 \
+  -e OPENAI_API_KEY=sk-... \
+  -e MISTRAL_API_KEY=... \
+  tictactoe-backend
+
+# Or use docker-compose
+docker compose up -d
+```
 
 ## API Endpoints
 
-- `POST /games` - Create a new game
-- `GET /games/{game_id}` - Get game state
-- `POST /games/{game_id}/move` - Make a move (random if no row/col provided)
-- `POST /games/{game_id}/auto` - Play entire game automatically
-- `POST /games/{game_id}/reset` - Reset a game
-- `DELETE /games/{game_id}` - Delete a game
-- `GET /games` - List all active games
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | API information |
+| `/health` | GET | Health check |
+| `/games` | POST | Create new game |
+| `/games/{id}` | GET | Get game state |
+| `/games/{id}/move` | POST | Make a move |
+| `/games/{id}/auto` | POST | Auto-play entire game |
+| `/games/{id}/reset` | POST | Reset game |
+| `/games/{id}` | DELETE | Delete game |
 
-## Getting Started
-
-### Prerequisites
-
-1. **API Keys** (for LLM players):
-   - OpenAI: Get from https://platform.openai.com/account/api-keys
-   - Mistral: Get from https://console.mistral.ai/api-keys
-
-2. **Environment Setup**:
-   ```bash
-   # Copy the example env file
-   cp .env.example .env
-   
-   # Edit .env and add your API keys
-   nano .env
-   ```
-
-### Using Docker (Recommended)
-
-1. Make sure you have Docker and Docker Compose installed
-
-2. Set up environment variables (see Prerequisites above)
-
-3. Build and start the containers:
-```bash
-docker-compose up --build
-```
-
-3. Access the application:
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000
-   - API Documentation: http://localhost:8000/docs
-
-4. To stop the containers:
-```bash
-docker-compose down
-```
-
-### Running Locally (Without Docker)
-
-#### Backend
-
-1. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-2. Run the server:
-```bash
-python main.py
-# or
-uvicorn main:app --reload
-```
-
-The API will be available at http://localhost:8000
-
-#### Frontend
-
-Simply open `frontend/index.html` in a web browser, or serve it with any HTTP server:
-
-```bash
-cd frontend
-python -m http.server 3000
-```
+**API Documentation:** http://localhost:8000/docs
 
 ## Usage Examples
 
-### Creating a Random vs Random Game
-
-```bash
-curl -X POST http://localhost:8000/games
-```
-
-### Creating an LLM vs LLM Game
-
-```bash
-curl -X POST http://localhost:8000/games \
-  -H "Content-Type: application/json" \
-  -d '{
-    "player_x": {
-      "use_llm": true,
-      "provider": "openai",
-      "model": "gpt-4o-mini",
-      "temperature": 0.7
-    },
-    "player_o": {
-      "use_llm": true,
-      "provider": "openai",
-      "model": "gpt-4o-mini",
-      "temperature": 0.9
-    }
-  }'
-```
-
-### Creating a Mixed Game (LLM vs Random)
-
+### Create Game (LLM vs LLM)
 ```bash
 curl -X POST http://localhost:8000/games \
   -H "Content-Type: application/json" \
@@ -148,179 +82,161 @@ curl -X POST http://localhost:8000/games \
       "model": "gpt-4o-mini"
     },
     "player_o": {
-      "use_llm": false
+      "use_llm": true,
+      "provider": "mistral",
+      "model": "mistral-large-latest"
     }
   }'
 ```
 
-### Making a Move
-
+### Make Move
 ```bash
-# Random/LLM-chosen move
-curl -X POST http://localhost:8000/games/{game_id}/move \
-  -H "Content-Type: application/json" \
-  -d '{}'
-
-# Specific move
 curl -X POST http://localhost:8000/games/{game_id}/move \
   -H "Content-Type: application/json" \
   -d '{"row": 0, "col": 0}'
 ```
 
-### Playing Entire Game Automatically
-
+### Auto-Play
 ```bash
 curl -X POST http://localhost:8000/games/{game_id}/auto
 ```
 
-### Getting Log File Paths
-
+### Health Check
 ```bash
-curl http://localhost:8000/logs
+curl http://localhost:8000/health
+# {"status": "healthy", "service": "ai-arena-tictactoe", "version": "1.0.0"}
 ```
 
-## Frontend Interface
+## Project Structure
 
-We provide two frontend options:
+```
+ai-arena-back-tic-tac-toe/
+├── main.py               # FastAPI application
+├── game.py               # Game logic and orchestration
+├── player.py             # Player class (LLM + Random)
+├── board.py              # Board state management
+├── prompts.py            # LLM prompts
+├── logger.py             # CSV logging system
+├── utils.py              # Utility functions
+├── requirements.txt      # Python dependencies
+├── Dockerfile            # Container configuration
+├── docker-compose.yml    # Local development
+└── logs/                 # CSV logs (runtime)
+```
 
-### Enhanced UI (`index-enhanced.html`) - DEFAULT
-**Recommended for most users**
+## Configuration
 
-Full-featured interface with:
-- **Player Configuration**: Choose LLM or random for each player
-- **Model Selection**: Pick from OpenAI (GPT-4o, GPT-4o-mini, etc.) or Mistral models
-- **Temperature Control**: Adjust creativity (0.0 = deterministic, 2.0 = very creative)
-- **Provider Selection**: Switch between OpenAI and Mistral
-- **Visual Game Board**: Click cells or let AI play
-- **Real-time Updates**: See game state and player info
-- **Beautiful UI**: Modern, gradient design with animations
+### Player Configuration
 
-Access at: http://localhost:3000 or http://localhost:3000/index-enhanced.html
+```python
+{
+  "use_llm": bool,          # True for LLM, False for random
+  "provider": str,          # "openai" or "mistral"
+  "model": str,             # Model name
+  "temperature": float      # 0.0 - 1.0 (default: 0.7)
+}
+```
 
-### Simple UI (`index.html`)
-**For debugging and minimal interface needs**
+### Supported Models
 
-Basic features:
-- **New Game**: Create a new game session (random players only)
-- **Make Move**: Manual or automatic moves
-- **Play Auto**: Play the entire game automatically
-- **Reset**: Reset the current game
-
-Access at: http://localhost:3000/index.html
-
-### Type-Safe API Integration
-
-The frontend includes TypeScript types that match backend Pydantic schemas:
-- **`frontend/src/types/api.ts`**: All request/response types
-- **`frontend/src/services/api.ts`**: Type-safe API client
-
-See **`FRONTEND_BACKEND_INTEGRATION.md`** for the complete integration guide.
-
-## Logging System
-
-The game automatically logs detailed information to CSV files in the `logs/` directory:
-
-### Moves Log (`logs/moves_*.csv`)
-Records every move with:
-- Timestamp and game ID
-- Player symbol and type (random/llm)
-- Board state and available moves
-- LLM prompt sent (if applicable)
-- LLM response and reasoning
-- Move validity and errors
-- Response time in milliseconds
-
-### Games Log (`logs/games_*.csv`)
-Records game summaries with:
-- Timestamp and game ID
-- Player types and models
-- Total moves and winner
-- Game duration
-- Final board state
-
-## Supported LLM Providers and Models
-
-### OpenAI
-- `gpt-4o-mini` (recommended for cost-efficiency)
+**OpenAI:**
+- `gpt-4o-mini` (recommended)
 - `gpt-4o`
 - `gpt-4-turbo`
-- `gpt-3.5-turbo`
 
-### Mistral
+**Mistral:**
+- `mistral-large-latest` (recommended)
 - `mistral-medium-latest`
 - `mistral-small-latest`
-- `mistral-tiny`
 
-See the `nikitas-agents` package documentation for the full list of supported models.
+## Logging
 
-## Architecture Notes
+All games create CSV logs in `logs/` directory:
 
-### LLM Integration
+- **Game logs:** Game outcomes, timing, player configs
+- **Prompt logs:** LLM prompts sent
+- **Response logs:** LLM responses received
+- **Move logs:** Individual moves with reasoning
 
-The `Player` class uses the `nikitas-agents` package to communicate with LLMs:
+## Deployment
 
-1. **Prompt Generation**: `prompts.py` formats the board state and generates strategic prompts
-2. **LLM Invocation**: Player calls the agent with system and user prompts
-3. **Response Parsing**: JSON responses are parsed to extract moves and reasoning
-4. **Error Handling**: Invalid moves fall back to random selection
-5. **Logging**: All interactions are logged to CSV for debugging
+This backend uses automated CI/CD with GitHub Actions.
 
-### Prompt Strategy
+**Quick Deploy:**
+1. Configure GitHub secrets (see [DEPLOYMENT.md](DEPLOYMENT.md))
+2. Push to `main` branch
+3. Automated deployment starts!
 
-The system prompt instructs LLMs to:
-- Play strategically (win conditions, blocking, positioning)
-- Respond in strict JSON format
-- Include reasoning for moves
+**Full Guide:** See [DEPLOYMENT.md](DEPLOYMENT.md)
 
-The user prompt provides:
-- Visual board representation
-- Available moves
-- Current player symbol
-- Strategic considerations
+## Environment Variables
 
-## Documentation
+```bash
+# Required for LLM players
+OPENAI_API_KEY=sk-...
+MISTRAL_API_KEY=...
+```
 
-This project includes comprehensive documentation:
+## Testing
 
-1. **`README.md`** (this file) - Overview and getting started
-2. **`FRONTEND_BACKEND_INTEGRATION.md`** - Complete guide for connecting frontend and backend
-3. **`QUICK_REFERENCE.md`** - Quick commands and patterns
-4. **`IMPLEMENTATION.md`** - LLM integration implementation details
-5. **`QUICKSTART.md`** - 3-step quick start guide
+```bash
+# Run test game
+python test_llm_game.py
+
+# Run with specific configuration
+# Edit test_llm_game.py to customize
+```
+
+## Health Monitoring
+
+```bash
+# Health check
+curl http://localhost:8000/health
+
+# Check active games
+curl http://localhost:8000/
+
+# View logs
+docker logs -f tictactoe-backend
+```
 
 ## Troubleshooting
 
-**LLM players not working?**
-- Check that API keys are set in `.env`
-- Verify the keys are loaded: `docker-compose config`
-- Check backend logs: `docker logs tictactoe-backend`
+### LLM Players Not Working
+- Verify API keys in `.env`
+- Check logs: `tail -f logs/*.csv`
+- Try with `use_llm: false` first
 
-**Import errors?**
-- The code gracefully falls back to random moves if `nikitas-agents` isn't installed
-- Rebuild containers: `docker-compose build --no-cache`
+### Connection Refused
+- Check server is running: `curl http://localhost:8000/health`
+- Verify port 8000 is available: `netstat -tuln | grep 8000`
 
-**Logs not appearing?**
-- Check the `logs/` directory is created
-- Verify volume mounting in docker-compose.yml
-- Check file permissions
+### Docker Build Fails
+- Check requirements.txt syntax
+- Verify Python version: `python --version` (3.9+)
 
-**Frontend can't reach backend?**
-- Verify API URL in frontend (default: http://localhost:8000)
-- Check CORS settings in backend
-- Ensure backend is running: `docker ps`
+## Dependencies
 
-**Type mismatches between frontend/backend?**
-- See `FRONTEND_BACKEND_INTEGRATION.md` for synchronization strategies
-- Use OpenAPI schema: `http://localhost:8000/openapi.json`
-- Check TypeScript types: `frontend/src/types/api.ts`
+```
+fastapi==0.104.1
+uvicorn==0.24.0
+pydantic>=2.5.2,<3.0.0
+nikitas-agents>=0.1.0
+python-dotenv==1.0.0
+```
 
-## Future Enhancements
+## Contributing
 
-- [ ] Add different AI strategies (minimax, etc.)
-- [ ] Implement human vs AI mode via frontend
-- [ ] Add game replay functionality
-- [ ] Persistent storage (database)
-- [ ] Better frontend UI/UX with LLM configuration
-- [ ] Multiplayer support via WebSockets
-- [ ] Tournament mode: multiple games with statistics
-- [ ] RAG integration for strategy documents
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature/my-feature`
+3. Commit changes: `git commit -m 'Add my feature'`
+4. Push to branch: `git push origin feature/my-feature`
+5. Open Pull Request
+
+## License
+
+[Your License Here]
+
+---
+
+**Need help?** Check [DEPLOYMENT.md](DEPLOYMENT.md) or raise an issue on GitHub.

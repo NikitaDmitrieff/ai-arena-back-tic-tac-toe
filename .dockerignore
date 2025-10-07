@@ -1,20 +1,67 @@
-__pycache__
-*.pyc
-*.pyo
-*.pyd
-.Python
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
 *.so
+.Python
+*.egg-info/
+dist/
+build/
 *.egg
-*.egg-info
-dist
-build
-.env
-.venv
-venv/
-ENV/
-.git
-.gitignore
-README.md
-docker-compose.yml
-frontend/
 
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# Testing
+.pytest_cache/
+.coverage
+.tox/
+htmlcov/
+*.cover
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD
+.github/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs (keep in volume, not in image)
+logs/
+*.log
+
+# Documentation
+*.md
+!README.md
+docs/
+
+# Testing
+test_*.py
+*_test.py
+tests/
+
+# Docker
+docker-compose.yml
+Dockerfile
+
+# Misc
+.editorconfig
+*.orig
+.cache/
